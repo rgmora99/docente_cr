@@ -34,3 +34,7 @@ class MaterialsView(LoginRequiredMixin, TemplateView):
 
 class PlanningGeneratorView(LoginRequiredMixin, TemplateView):
     template_name = 'core/planning_generator.html'
+
+
+class TeacherProfilesView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/teacher_profiles.html'

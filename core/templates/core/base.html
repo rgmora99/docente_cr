@@ -37,6 +37,7 @@
       <a class="nav-link" href="{% url 'weekly_planner' %}" title="Planificador semanal"><i class="bi bi-calendar-week me-2"></i><span class="sidebar-label">Planificador semanal</span></a>
       <a class="nav-link" href="{% url 'planning_generator' %}" title="Planeamientos"><i class="bi bi-pencil-square me-2"></i><span class="sidebar-label">Planeamientos</span></a>
       <a class="nav-link" href="{% url 'materials' %}" title="Materiales"><i class="bi bi-folder2-open me-2"></i><span class="sidebar-label">Materiales</span></a>
+      <a class="nav-link" href="{% url 'teacher_profiles' %}" title="Configuración de planeaciones"><i class="bi bi-diagram-3 me-2"></i><span class="sidebar-label">Configurar planeaciones</span></a>
     </nav>
     <form action="{% url 'logout' %}" method="post" class="mt-auto">
       {% csrf_token %}

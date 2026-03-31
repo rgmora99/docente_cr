@@ -410,3 +410,21 @@ body {
   resize: vertical;
   min-height: 170px;
 }
+
+.planner-selected-profile {
+  background: #f8faff;
+  border: 1px dashed #cbd5e1;
+  color: #334155;
+}
+
+.teacher-profiles-list {
+  display: grid;
+  gap: .75rem;
+}
+
+.teacher-profile-item {
+  padding: .8rem .9rem;
+  border: 1px solid #e2e8f0;
+  border-radius: .9rem;
+  background: #fff;
+}
