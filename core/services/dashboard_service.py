@@ -28,9 +28,9 @@ class DashboardService:
                     'accent': 'accent-mint',
                 },
                 {
-                    'title': 'Exámenes',
-                    'icon': 'bi-ui-checks-grid',
-                    'url_name': None,
+                    'title': 'Config. planeaciones',
+                    'icon': 'bi-diagram-3',
+                    'url_name': 'teacher_profiles',
                     'accent': 'accent-pink',
                 },
             ],

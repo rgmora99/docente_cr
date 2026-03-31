@@ -55,12 +55,104 @@ if (appShell && sidebar) {
   });
 }
 
+const normalizeProfileLabel = (profile) => {
+  const sectionLabel = profile.section ? ` · Sección ${profile.section}` : '';
+  return `${profile.grade} · ${profile.subject}${sectionLabel}`;
+};
+
+const readTeacherProfiles = () => {
+  const rawData = localStorage.getItem('teacherPlanningProfiles');
+  if (!rawData) return [];
+
+  try {
+    const parsed = JSON.parse(rawData);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (_error) {
+    return [];
+  }
+};
+
+const saveTeacherProfiles = (profiles) => {
+  localStorage.setItem('teacherPlanningProfiles', JSON.stringify(profiles));
+};
+
+const profileMaintenanceForm = document.querySelector('#teacherProfileForm');
+
+if (profileMaintenanceForm) {
+  const gradeField = document.querySelector('#profileGrade');
+  const subjectField = document.querySelector('#profileSubject');
+  const sectionField = document.querySelector('#profileSection');
+  const profilesList = document.querySelector('#teacherProfilesList');
+  const profilesCounter = document.querySelector('#teacherProfilesCounter');
+
+  const renderProfiles = () => {
+    const profiles = readTeacherProfiles();
+    profilesCounter.textContent = String(profiles.length);
+
+    if (!profiles.length) {
+      profilesList.innerHTML = '<p class="text-muted mb-0">Aún no tienes planeaciones configuradas.</p>';
+      return;
+    }
+
+    profilesList.innerHTML = profiles.map((profile) => `
+      <div class="teacher-profile-item d-flex justify-content-between align-items-center gap-2">
+        <div>
+          <h6 class="mb-1">${profile.grade} · ${profile.subject}</h6>
+          <small class="text-muted">${profile.section || 'Sin sección'} · ${profile.label}</small>
+        </div>
+        <button class="btn btn-sm btn-outline-danger rounded-pill" type="button" data-delete-profile="${profile.id}">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+    `).join('');
+  };
+
+  profileMaintenanceForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const grade = gradeField.value.trim();
+    const subject = subjectField.value.trim();
+    const section = sectionField.value.trim();
+
+    if (!grade || !subject) return;
+
+    const profiles = readTeacherProfiles();
+    profiles.push({
+      id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      grade,
+      subject,
+      section,
+      label: normalizeProfileLabel({ grade, subject, section }),
+    });
+
+    saveTeacherProfiles(profiles);
+    profileMaintenanceForm.reset();
+    renderProfiles();
+  });
+
+  profilesList.addEventListener('click', (event) => {
+    const target = event.target.closest('[data-delete-profile]');
+    if (!target) return;
+
+    const profileId = target.dataset.deleteProfile;
+    const filteredProfiles = readTeacherProfiles().filter((profile) => profile.id !== profileId);
+    saveTeacherProfiles(filteredProfiles);
+
+    if (localStorage.getItem('plannerSelectedProfileId') === profileId) {
+      localStorage.removeItem('plannerSelectedProfileId');
+    }
+
+    renderProfiles();
+  });
+
+  renderProfiles();
+}
+
 const plannerRoot = document.querySelector('#weeklyPlannerCalendar');
 
 if (plannerRoot) {
-  const gradeInput = document.querySelector('#plannerGrade');
-  const subjectInput = document.querySelector('#plannerSubject');
-  const sectionInput = document.querySelector('#plannerSection');
+  const profileSelect = document.querySelector('#plannerProfileSelect');
+  const profileSummary = document.querySelector('#plannerSelectedProfileSummary');
   const monthLabel = document.querySelector('#plannerMonthLabel');
   const monthGrid = document.querySelector('#plannerMonthGrid');
   const selectedDateLabel = document.querySelector('#plannerSelectedDateLabel');
@@ -82,15 +174,21 @@ if (plannerRoot) {
     return `${year}-${month}-${day}`;
   };
 
+  const getSelectedProfile = () => {
+    const profiles = readTeacherProfiles();
+    return profiles.find((profile) => profile.id === profileSelect.value) || null;
+  };
+
   const getProfileKey = () => {
-    const grade = gradeInput.value.trim().toLowerCase() || 'general';
-    const subject = subjectInput.value.trim().toLowerCase() || 'todas';
-    const section = sectionInput.value.trim().toLowerCase() || 'sin-seccion';
-    return `plannerData::${grade}::${subject}::${section}`;
+    if (!profileSelect.value) return null;
+    return `plannerData::${profileSelect.value}`;
   };
 
   const readPlannerData = () => {
-    const rawData = localStorage.getItem(getProfileKey());
+    const profileKey = getProfileKey();
+    if (!profileKey) return {};
+
+    const rawData = localStorage.getItem(profileKey);
     if (!rawData) return {};
 
     try {
@@ -101,7 +199,9 @@ if (plannerRoot) {
   };
 
   const savePlannerData = (data) => {
-    localStorage.setItem(getProfileKey(), JSON.stringify(data));
+    const profileKey = getProfileKey();
+    if (!profileKey) return;
+    localStorage.setItem(profileKey, JSON.stringify(data));
   };
 
   const updateSelectedDateLabel = () => {
@@ -111,8 +211,18 @@ if (plannerRoot) {
   };
 
   const loadSelectedDayNotes = () => {
+    if (!profileSelect.value) {
+      dayNotesInput.value = '';
+      dayNotesInput.disabled = true;
+      dayNotesInput.placeholder = 'Primero configura y selecciona una planeación para habilitar notas.';
+      updateSelectedDateLabel();
+      return;
+    }
+
     const plannerData = readPlannerData();
     dayNotesInput.value = plannerData[getDayKey(selectedDate)] || '';
+    dayNotesInput.disabled = false;
+    dayNotesInput.placeholder = 'Escribe actividades, objetivos, evaluaciones o recursos para el día seleccionado...';
     updateSelectedDateLabel();
   };
 
@@ -176,25 +286,34 @@ if (plannerRoot) {
   };
 
   const persistCurrentNote = () => {
+    if (!profileSelect.value) return;
     const plannerData = readPlannerData();
     plannerData[getDayKey(selectedDate)] = dayNotesInput.value;
     savePlannerData(plannerData);
   };
 
-  const restorePlannerProfile = () => {
-    gradeInput.value = localStorage.getItem('plannerLastGrade') || '';
-    subjectInput.value = localStorage.getItem('plannerLastSubject') || '';
-    sectionInput.value = localStorage.getItem('plannerLastSection') || '';
-  };
+  const renderProfileOptions = () => {
+    const profiles = readTeacherProfiles();
+    const currentSelection = localStorage.getItem('plannerSelectedProfileId');
 
-  const persistPlannerProfile = () => {
-    localStorage.setItem('plannerLastGrade', gradeInput.value.trim());
-    localStorage.setItem('plannerLastSubject', subjectInput.value.trim());
-    localStorage.setItem('plannerLastSection', sectionInput.value.trim());
-  };
+    if (!profiles.length) {
+      profileSelect.innerHTML = '<option value="">No hay planeaciones configuradas</option>';
+      profileSelect.value = '';
+      profileSummary.textContent = 'No tienes planeaciones todavía. Usa el botón "Administrar planeaciones" para crear una.';
+      loadSelectedDayNotes();
+      return;
+    }
 
-  const handleProfileChange = () => {
-    persistPlannerProfile();
+    profileSelect.innerHTML = profiles.map((profile) => `
+      <option value="${profile.id}">${profile.label}</option>
+    `).join('');
+
+    const selectedProfileExists = profiles.some((profile) => profile.id === currentSelection);
+    profileSelect.value = selectedProfileExists ? currentSelection : profiles[0].id;
+    localStorage.setItem('plannerSelectedProfileId', profileSelect.value);
+
+    const profile = getSelectedProfile();
+    profileSummary.textContent = profile ? `Trabajando con: ${profile.label}` : '';
     loadSelectedDayNotes();
   };
 
@@ -208,13 +327,15 @@ if (plannerRoot) {
     renderCalendar();
   });
 
-  [gradeInput, subjectInput, sectionInput].forEach((field) => {
-    field.addEventListener('change', handleProfileChange);
+  profileSelect.addEventListener('change', () => {
+    localStorage.setItem('plannerSelectedProfileId', profileSelect.value);
+    const profile = getSelectedProfile();
+    profileSummary.textContent = profile ? `Trabajando con: ${profile.label}` : '';
+    loadSelectedDayNotes();
   });
 
   dayNotesInput.addEventListener('input', persistCurrentNote);
 
-  restorePlannerProfile();
   renderCalendar();
-  loadSelectedDayNotes();
+  renderProfileOptions();
 }
