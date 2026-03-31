@@ -10,7 +10,7 @@ class DashboardService:
         return {
             'feature_cards': [
                 {
-                    'title': 'Planificador semanal',
+                    'title': 'Planificador',
                     'icon': 'bi-calendar-week',
                     'url_name': 'weekly_planner',
                     'accent': 'accent-purple',
