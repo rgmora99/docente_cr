@@ -128,8 +128,42 @@
 
     <div class="card border-0 shadow-sm rounded-4">
       <div class="card-body">
-        <h2 class="h5 fw-bold mb-3">Mantenimiento de planeaciones</h2>
-        <p class="text-muted small mb-3">Tus últimas planeaciones para reusar, ajustar o archivar según avances del grupo.</p>
+        <h2 class="h5 fw-bold mb-3">Listado y mantenimiento</h2>
+        <p class="text-muted small mb-3">Busca rápido por texto, estado, asignatura o nivel, y exporta cada planeación en PDF o Word.</p>
+
+        <form class="row g-2 mb-3" method="get">
+          <div class="col-12">
+            <input class="form-control form-control-sm rounded-3" type="text" name="q" value="{{ active_filters.q }}" placeholder="Buscar por tema u objetivo">
+          </div>
+          <div class="col-6">
+            <select class="form-select form-select-sm rounded-3" name="status">
+              <option value="">Estado</option>
+              {% for value, label in status_options %}
+                <option value="{{ value }}" {% if active_filters.status == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-6">
+            <select class="form-select form-select-sm rounded-3" name="subject_filter">
+              <option value="">Asignatura</option>
+              {% for subject in subject_options %}
+                <option value="{{ subject }}" {% if active_filters.subject_filter == subject %}selected{% endif %}>{{ subject }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-12">
+            <select class="form-select form-select-sm rounded-3" name="level_filter">
+              <option value="">Nivel</option>
+              {% for level in level_options %}
+                <option value="{{ level }}" {% if active_filters.level_filter == level %}selected{% endif %}>{{ level }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-12 d-flex gap-2">
+            <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill">Filtrar</button>
+            <a href="{% url 'planning_generator' %}" class="btn btn-sm btn-outline-secondary rounded-pill">Limpiar</a>
+          </div>
+        </form>
 
         {% if planning_items %}
           <div class="d-grid gap-2">
@@ -143,8 +177,10 @@
                   </div>
                   <span class="badge text-bg-secondary text-capitalize">{{ plan.get_status_display }}</span>
                 </div>
-                <div class="d-flex gap-2 mt-3">
+                <div class="d-flex flex-wrap gap-2 mt-3">
                   <a href="{% url 'planning_generator' %}?plan={{ plan.id }}" class="btn btn-sm btn-outline-primary rounded-pill">Editar</a>
+                  <a href="{% url 'planning_export' plan.id 'pdf' %}" class="btn btn-sm btn-outline-dark rounded-pill">Exportar PDF</a>
+                  <a href="{% url 'planning_export' plan.id 'word' %}" class="btn btn-sm btn-outline-dark rounded-pill">Exportar Word</a>
                   <form method="post" class="m-0">
                     {% csrf_token %}
                     <input type="hidden" name="plan_id" value="{{ plan.id }}">
@@ -156,7 +192,7 @@
             {% endfor %}
           </div>
         {% else %}
-          <p class="text-muted mb-0">Todavía no tienes planeaciones guardadas.</p>
+          <p class="text-muted mb-0">No hay planeaciones con los filtros actuales.</p>
         {% endif %}
       </div>
     </div>

@@ -1,12 +1,17 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
+from django.db.models import Q
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
+from django.utils.text import slugify
+from django.views import View
 from django.views.generic import TemplateView
 
 from .forms import PlanningRecordForm
 from .models import PlanningRecord
 from .services.dashboard_service import DashboardService
+from .services.planning_export_service import PlanningExportService
 from .services.ui_theme_service import UIThemeService
 
 
@@ -53,7 +58,42 @@ class PlanningGeneratorView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['planning_items'] = PlanningRecord.objects.filter(teacher=self.request.user)
+        base_query = PlanningRecord.objects.filter(teacher=self.request.user)
+
+        query_text = self.request.GET.get('q', '').strip()
+        status_filter = self.request.GET.get('status', '').strip()
+        subject_filter = self.request.GET.get('subject_filter', '').strip()
+        level_filter = self.request.GET.get('level_filter', '').strip()
+
+        planning_query = base_query
+        if query_text:
+            planning_query = planning_query.filter(
+                Q(title__icontains=query_text)
+                | Q(learning_objective__icontains=query_text)
+                | Q(learning_sequence__icontains=query_text)
+            )
+
+        if status_filter:
+            planning_query = planning_query.filter(status=status_filter)
+        if subject_filter:
+            planning_query = planning_query.filter(subject=subject_filter)
+        if level_filter:
+            planning_query = planning_query.filter(level=level_filter)
+
+        context['planning_items'] = planning_query
+        context['status_options'] = PlanningRecord.Status.choices
+        context['subject_options'] = (
+            base_query.values_list('subject', flat=True).distinct().order_by('subject')
+        )
+        context['level_options'] = (
+            base_query.values_list('level', flat=True).distinct().order_by('level')
+        )
+        context['active_filters'] = {
+            'q': query_text,
+            'status': status_filter,
+            'subject_filter': subject_filter,
+            'level_filter': level_filter,
+        }
 
         if 'planning_form' in kwargs:
             context['planning_form'] = kwargs['planning_form']
@@ -98,6 +138,30 @@ class PlanningGeneratorView(LoginRequiredMixin, TemplateView):
             messages.success(request, 'Borrador de planeación creado.')
 
         return redirect('planning_generator')
+
+
+class PlanningExportView(LoginRequiredMixin, View):
+    def get(self, request, plan_id, export_format):
+        plan = get_object_or_404(PlanningRecord, id=plan_id, teacher=request.user)
+        safe_slug = slugify(plan.title) or f'planeamiento-{plan.id}'
+
+        if export_format == 'pdf':
+            response = HttpResponse(
+                PlanningExportService.build_pdf_document(plan),
+                content_type='application/pdf',
+            )
+            response['Content-Disposition'] = f'attachment; filename="{safe_slug}.pdf"'
+            return response
+
+        if export_format in {'word', 'doc'}:
+            response = HttpResponse(
+                PlanningExportService.build_word_document(plan),
+                content_type='application/msword',
+            )
+            response['Content-Disposition'] = f'attachment; filename="{safe_slug}.doc"'
+            return response
+
+        raise Http404('Formato de exportación no soportado.')
 
 
 class TeacherProfilesView(LoginRequiredMixin, TemplateView):
