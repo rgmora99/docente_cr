@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+{% block title %}Materiales | Docente CR{% endblock %}
+{% block content %}
+<h1 class="fw-bold mb-3">Repositorio de materiales</h1>
+<p class="text-muted">Centraliza guías, presentaciones y recursos descargables.</p>
+<div class="card border-0 shadow-sm rounded-4 mt-4">
+  <div class="card-body">
+    <div class="d-flex flex-wrap gap-2 mb-3">
+      <button class="btn btn-primary rounded-pill"><i class="bi bi-upload me-2"></i>Subir material</button>
+      <button class="btn btn-light rounded-pill"><i class="bi bi-funnel me-2"></i>Filtrar</button>
+    </div>
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr><th>Nombre</th><th>Tipo</th><th>Curso</th><th>Fecha</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Guía de lectura</td><td>PDF</td><td>7°A</td><td>30/03/2026</td></tr>
+          <tr><td>Plantilla de laboratorio</td><td>DOCX</td><td>8°B</td><td>28/03/2026</td></tr>
+          <tr><td>Resumen de historia</td><td>PPTX</td><td>9°C</td><td>26/03/2026</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
