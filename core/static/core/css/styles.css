@@ -34,7 +34,11 @@ body {
   border-right: 1px solid #e2e8f0;
   transition: width .25s ease, transform .25s ease, padding .25s ease;
   overflow-x: hidden;
-  position: relative;
+  overflow-y: auto;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  align-self: start;
   z-index: 30;
 }
 
