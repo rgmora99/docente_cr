@@ -1,0 +1,46 @@
+{% extends 'core/base.html' %}
+{% block title %}Configuración de planeaciones | Docente CR{% endblock %}
+{% block content %}
+<h1 class="fw-bold mb-3">Configuración de planeaciones</h1>
+<p class="text-muted mb-4">Define las combinaciones de grado, materia y sección que utilizas. Luego podrás seleccionarlas desde el planificador semanal.</p>
+
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="card border-0 shadow-sm rounded-4 h-100">
+      <div class="card-body p-4">
+        <h5 class="fw-bold mb-3">Agregar planeación</h5>
+        <form id="teacherProfileForm" class="row g-3">
+          <div class="col-12">
+            <label class="form-label fw-semibold" for="profileGrade">Grado</label>
+            <input class="form-control rounded-3" id="profileGrade" type="text" placeholder="Ej: 5to año" required>
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold" for="profileSubject">Materia</label>
+            <input class="form-control rounded-3" id="profileSubject" type="text" placeholder="Ej: Matemáticas" required>
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-semibold" for="profileSection">Sección (opcional)</label>
+            <input class="form-control rounded-3" id="profileSection" type="text" placeholder="Ej: 5-2">
+          </div>
+          <div class="col-12">
+            <button class="btn btn-primary rounded-pill px-4" type="submit"><i class="bi bi-plus-circle me-2"></i>Guardar planeación</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-7">
+    <div class="card border-0 shadow-sm rounded-4 h-100">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center gap-2 mb-3">
+          <h5 class="fw-bold mb-0">Planeaciones configuradas</h5>
+          <span class="badge text-bg-light" id="teacherProfilesCounter">0</span>
+        </div>
+        <p class="text-muted small mb-3">Estas opciones aparecerán como lista seleccionable en el Planificador semanal.</p>
+        <div class="teacher-profiles-list" id="teacherProfilesList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

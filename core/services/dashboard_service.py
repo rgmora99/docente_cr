@@ -10,7 +10,7 @@ class DashboardService:
         return {
             'feature_cards': [
                 {
-                    'title': 'Planificador semanal',
+                    'title': 'Planificador',
                     'icon': 'bi-calendar-week',
                     'url_name': 'weekly_planner',
                     'accent': 'accent-purple',
@@ -28,9 +28,9 @@ class DashboardService:
                     'accent': 'accent-mint',
                 },
                 {
-                    'title': 'Exámenes',
-                    'icon': 'bi-ui-checks-grid',
-                    'url_name': None,
+                    'title': 'Config. planeaciones',
+                    'icon': 'bi-diagram-3',
+                    'url_name': 'teacher_profiles',
                     'accent': 'accent-pink',
                 },
             ],

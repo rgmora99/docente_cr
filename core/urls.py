@@ -6,13 +6,16 @@ from .views import (
     WeeklyPlannerView,
     MaterialsView,
     PlanningGeneratorView,
+    TeacherProfilesView,
 )
 
 urlpatterns = [
     path('', TeacherLoginView.as_view(), name='login'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
-    path('planificador-semanal/', WeeklyPlannerView.as_view(), name='weekly_planner'),
+    path('planificador/', WeeklyPlannerView.as_view(), name='weekly_planner'),
+    path('planificador-semanal/', WeeklyPlannerView.as_view()),
     path('materiales/', MaterialsView.as_view(), name='materials'),
     path('planeamientos/', PlanningGeneratorView.as_view(), name='planning_generator'),
+    path('configuracion-planeaciones/', TeacherProfilesView.as_view(), name='teacher_profiles'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]
