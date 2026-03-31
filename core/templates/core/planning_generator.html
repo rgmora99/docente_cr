@@ -2,7 +2,7 @@
 {% block title %}Planeamientos | Docente CR{% endblock %}
 {% block content %}
 <h1 class="fw-bold mb-2">Generador básico de planeamientos</h1>
-<p class="text-muted">Piensa como docente: crea tu clase, guarda evidencia de seguimiento y ajústala cuando lo necesites.</p>
+<p class="text-muted">Basado en la plantilla oficial MEP 2025 (I y II Ciclos), pero simplificado para que llenes primero lo esencial y luego detalles.</p>
 
 {% if messages %}
   <div class="mt-3">
@@ -12,6 +12,10 @@
   </div>
 {% endif %}
 
+<div class="alert alert-info rounded-4 mt-3" role="alert">
+  <strong>Ruta sugerida (MEP simplificada):</strong> 1) Aspectos administrativos → 2) Aprendizajes esperados → 3) Mediación didáctica → 4) Indicadores/evaluación → 5) Recursos y observaciones.
+</div>
+
 <div class="row g-4 mt-1">
   <div class="col-xl-8">
     <div class="card border-0 shadow-sm rounded-4 h-100">
@@ -19,6 +23,7 @@
         <h2 class="h5 fw-bold mb-3">
           {% if selected_planning %}Editar planeación{% else %}Nuevo borrador{% endif %}
         </h2>
+
         <form class="row g-3" method="post">
           {% csrf_token %}
           <input type="hidden" name="action" value="save">
@@ -26,68 +31,73 @@
             <input type="hidden" name="plan_id" value="{{ selected_planning.id }}">
           {% endif %}
 
+          <div class="col-12"><h3 class="h6 fw-bold text-uppercase text-muted mb-0">Aspectos administrativos</h3></div>
+
           <div class="col-md-6">
-            <label class="form-label" for="{{ planning_form.title.id_for_label }}">{{ planning_form.title.label }}</label>
+            <label class="form-label" for="{{ planning_form.title.id_for_label }}">Tema / Unidad de trabajo</label>
             {{ planning_form.title }}
-            {% if planning_form.title.errors %}<small class="text-danger d-block mt-1">{{ planning_form.title.errors|join:', ' }}</small>{% endif %}
           </div>
 
           <div class="col-md-6">
             <label class="form-label" for="planningSubjectSelect">Asignatura (desde configuración)</label>
             <select class="form-select rounded-3" id="planningSubjectSelect" name="subject" required data-current-subject="{{ planning_form.subject.value|default_if_none:'' }}"></select>
             <small class="text-muted d-block mt-1">Se toma de <a href="{% url 'teacher_profiles' %}">Configuración de planeaciones</a>.</small>
-            {% if planning_form.subject.errors %}<small class="text-danger d-block mt-1">{{ planning_form.subject.errors|join:', ' }}</small>{% endif %}
           </div>
 
           <div class="col-md-6">
             <label class="form-label" for="planningLevelSelect">Nivel (desde configuración)</label>
             <select class="form-select rounded-3" id="planningLevelSelect" name="level" required data-current-level="{{ planning_form.level.value|default_if_none:'' }}"></select>
-            {% if planning_form.level.errors %}<small class="text-danger d-block mt-1">{{ planning_form.level.errors|join:', ' }}</small>{% endif %}
           </div>
 
           <div class="col-md-6">
-            <label class="form-label" for="{{ planning_form.week_start.id_for_label }}">{{ planning_form.week_start.label }}</label>
+            <label class="form-label" for="{{ planning_form.week_start.id_for_label }}">Semana de trabajo</label>
             {{ planning_form.week_start }}
-            {% if planning_form.week_start.errors %}<small class="text-danger d-block mt-1">{{ planning_form.week_start.errors|join:', ' }}</small>{% endif %}
           </div>
 
+          <div class="col-12 mt-2"><h3 class="h6 fw-bold text-uppercase text-muted mb-0">Aprendizajes esperados</h3></div>
           <div class="col-12">
-            <label class="form-label" for="{{ planning_form.learning_objective.id_for_label }}">{{ planning_form.learning_objective.label }}</label>
+            <label class="form-label" for="{{ planning_form.learning_objective.id_for_label }}">Aprendizajes esperados / Objetivo de aprendizaje</label>
             {{ planning_form.learning_objective }}
             {% if planning_form.learning_objective.errors %}<small class="text-danger d-block mt-1">{{ planning_form.learning_objective.errors|join:', ' }}</small>{% endif %}
           </div>
 
+          <div class="col-12 mt-2"><h3 class="h6 fw-bold text-uppercase text-muted mb-0">Mediación didáctica</h3></div>
+          <div class="col-12 d-flex justify-content-end">
+            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" data-fill-template="mediation">Usar estructura MEP (etapas)</button>
+          </div>
           <div class="col-12">
-            <label class="form-label" for="{{ planning_form.learning_sequence.id_for_label }}">{{ planning_form.learning_sequence.label }}</label>
+            <label class="form-label" for="{{ planning_form.learning_sequence.id_for_label }}">Estrategias de mediación / Secuencia didáctica</label>
             {{ planning_form.learning_sequence }}
-            {% if planning_form.learning_sequence.help_text %}<small class="text-muted d-block mt-1">{{ planning_form.learning_sequence.help_text }}</small>{% endif %}
-            {% if planning_form.learning_sequence.errors %}<small class="text-danger d-block mt-1">{{ planning_form.learning_sequence.errors|join:', ' }}</small>{% endif %}
+            <small class="text-muted d-block mt-1">Incluye inicio, desarrollo, cierre y actividades de refuerzo.</small>
           </div>
 
+          <div class="col-12 mt-2"><h3 class="h6 fw-bold text-uppercase text-muted mb-0">Evaluación</h3></div>
+          <div class="col-12 d-flex justify-content-end">
+            <button type="button" class="btn btn-sm btn-outline-primary rounded-pill" data-fill-template="evaluation">Usar estructura de indicadores</button>
+          </div>
           <div class="col-12">
-            <label class="form-label" for="{{ planning_form.assessment_strategy.id_for_label }}">{{ planning_form.assessment_strategy.label }}</label>
+            <label class="form-label" for="{{ planning_form.assessment_strategy.id_for_label }}">Indicadores de evaluación / Estrategia</label>
             {{ planning_form.assessment_strategy }}
-            {% if planning_form.assessment_strategy.help_text %}<small class="text-muted d-block mt-1">{{ planning_form.assessment_strategy.help_text }}</small>{% endif %}
-            {% if planning_form.assessment_strategy.errors %}<small class="text-danger d-block mt-1">{{ planning_form.assessment_strategy.errors|join:', ' }}</small>{% endif %}
+            <small class="text-muted d-block mt-1">Redacta indicadores observables, claros y con un solo aspecto por observar.</small>
           </div>
 
+          <div class="col-12 mt-2"><h3 class="h6 fw-bold text-uppercase text-muted mb-0">Recursos y seguimiento</h3></div>
           <div class="col-12">
-            <label class="form-label" for="{{ planning_form.resources.id_for_label }}">{{ planning_form.resources.label }}</label>
+            <label class="form-label" for="{{ planning_form.resources.id_for_label }}">Recursos pedagógicos</label>
             {{ planning_form.resources }}
-            {% if planning_form.resources.errors %}<small class="text-danger d-block mt-1">{{ planning_form.resources.errors|join:', ' }}</small>{% endif %}
           </div>
 
+          <div class="col-12 d-flex justify-content-end">
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" data-fill-template="followup">Plantilla de reflexión docente</button>
+          </div>
           <div class="col-12">
-            <label class="form-label" for="{{ planning_form.follow_up_notes.id_for_label }}">{{ planning_form.follow_up_notes.label }}</label>
+            <label class="form-label" for="{{ planning_form.follow_up_notes.id_for_label }}">Observaciones / Mantenimiento de la planeación</label>
             {{ planning_form.follow_up_notes }}
-            {% if planning_form.follow_up_notes.help_text %}<small class="text-muted d-block mt-1">{{ planning_form.follow_up_notes.help_text }}</small>{% endif %}
-            {% if planning_form.follow_up_notes.errors %}<small class="text-danger d-block mt-1">{{ planning_form.follow_up_notes.errors|join:', ' }}</small>{% endif %}
           </div>
 
           <div class="col-md-6">
             <label class="form-label" for="{{ planning_form.status.id_for_label }}">{{ planning_form.status.label }}</label>
             {{ planning_form.status }}
-            {% if planning_form.status.errors %}<small class="text-danger d-block mt-1">{{ planning_form.status.errors|join:', ' }}</small>{% endif %}
           </div>
 
           <div class="col-12 d-flex flex-wrap gap-2">
@@ -104,6 +114,18 @@
   </div>
 
   <div class="col-xl-4">
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+      <div class="card-body">
+        <h2 class="h6 fw-bold mb-2">Guía rápida para docentes</h2>
+        <ul class="small text-muted mb-0 ps-3">
+          <li>Escribe los aprendizajes tal como están en el programa vigente.</li>
+          <li>En mediación, detalla qué hará docente y estudiantes por etapa.</li>
+          <li>Usa indicadores observables para evidenciar logro.</li>
+          <li>En observaciones, deja acuerdos para la siguiente semana.</li>
+        </ul>
+      </div>
+    </div>
+
     <div class="card border-0 shadow-sm rounded-4">
       <div class="card-body">
         <h2 class="h5 fw-bold mb-3">Mantenimiento de planeaciones</h2>
@@ -145,6 +167,9 @@
   (() => {
     const subjectSelect = document.querySelector('#planningSubjectSelect');
     const levelSelect = document.querySelector('#planningLevelSelect');
+    const sequenceField = document.querySelector('#id_learning_sequence');
+    const assessmentField = document.querySelector('#id_assessment_strategy');
+    const followUpField = document.querySelector('#id_follow_up_notes');
     if (!subjectSelect || !levelSelect) return;
 
     const parseProfiles = () => {
@@ -157,6 +182,46 @@
         return [];
       }
     };
+
+    const templates = {
+      mediation: [
+        '1) Inicio / exploración: activar conocimientos previos y contextualizar el aprendizaje esperado.',
+        '2) Desarrollo guiado: modelado, práctica acompañada y trabajo colaborativo.',
+        '3) Aplicación: resolución de tarea o mini-reto con evidencia observable.',
+        '4) Cierre y metacognición: síntesis, retroalimentación y acuerdo de mejora.',
+        '5) Refuerzo: adecuaciones o apoyos para estudiantes que requieren acompañamiento adicional.',
+      ].join('\n'),
+      evaluation: [
+        'Indicador 1 (logro base): ...',
+        'Indicador 2 (aplicación): ...',
+        'Indicador 3 (autonomía/transferencia): ...',
+        'Instrumento: lista de cotejo / rúbrica breve / registro anecdótico.',
+        'Tipo: diagnóstica, formativa y sumativa (según corresponda).',
+      ].join('\n'),
+      followup: [
+        '¿Qué funcionó bien esta semana?',
+        '¿Qué no funcionó y por qué?',
+        '¿Qué ajustaré en la próxima mediación?',
+        'Estudiantes que requieren seguimiento específico:',
+      ].join('\n'),
+    };
+
+    const applyTemplate = (templateKey) => {
+      const mapping = {
+        mediation: sequenceField,
+        evaluation: assessmentField,
+        followup: followUpField,
+      };
+      const target = mapping[templateKey];
+      const text = templates[templateKey];
+      if (!target || !text) return;
+      target.value = text;
+      target.dispatchEvent(new Event('input', { bubbles: true }));
+    };
+
+    document.querySelectorAll('[data-fill-template]').forEach((button) => {
+      button.addEventListener('click', () => applyTemplate(button.dataset.fillTemplate));
+    });
 
     const currentSubject = subjectSelect.dataset.currentSubject || '';
     const currentLevel = levelSelect.dataset.currentLevel || '';
@@ -178,9 +243,7 @@
         ? [...groupedLevelsBySubject.get(subjectValue)].sort((a, b) => a.localeCompare(b, 'es'))
         : [];
 
-      if (currentLevel && !levels.includes(currentLevel)) {
-        levels.unshift(currentLevel);
-      }
+      if (currentLevel && !levels.includes(currentLevel)) levels.unshift(currentLevel);
 
       if (!levels.length) {
         levelSelect.innerHTML = '<option value="">Primero configura una asignatura</option>';
@@ -193,9 +256,7 @@
       levelSelect.value = levels.includes(currentLevel) ? currentLevel : levels[0];
     };
 
-    if (currentSubject && !subjects.includes(currentSubject)) {
-      subjects.unshift(currentSubject);
-    }
+    if (currentSubject && !subjects.includes(currentSubject)) subjects.unshift(currentSubject);
 
     if (!subjects.length) {
       subjectSelect.innerHTML = '<option value="">Sin configuración disponible</option>';
@@ -206,14 +267,9 @@
     }
 
     subjectSelect.innerHTML = subjects.map((subject) => `<option value="${subject}">${subject}</option>`).join('');
-    subjectSelect.disabled = false;
     subjectSelect.value = subjects.includes(currentSubject) ? currentSubject : subjects[0];
-
     renderLevels(subjectSelect.value);
-
-    subjectSelect.addEventListener('change', () => {
-      renderLevels(subjectSelect.value);
-    });
+    subjectSelect.addEventListener('change', () => renderLevels(subjectSelect.value));
   })();
 </script>
 {% endblock %}
