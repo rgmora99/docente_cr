@@ -87,12 +87,12 @@ body {
 }
 
 .app-shell.sidebar-collapsed.with-sidebar {
-  grid-template-columns: 92px minmax(0, 1fr);
+  grid-template-columns: 104px minmax(0, 1fr);
 }
 
 .app-shell.sidebar-collapsed .sidebar {
-  padding-left: .9rem !important;
-  padding-right: .9rem !important;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
 }
 
 .app-shell.sidebar-collapsed .sidebar .sidebar-label {
@@ -105,6 +105,47 @@ body {
 .app-shell.sidebar-collapsed .sidebar .nav-link,
 .app-shell.sidebar-collapsed .logout-btn {
   justify-content: center;
+}
+
+.app-shell.sidebar-collapsed .sidebar-header {
+  justify-content: center !important;
+}
+
+.app-shell.sidebar-collapsed .sidebar-header > div {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.app-shell.sidebar-collapsed .sidebar-header .sidebar-toggle-btn {
+  position: absolute;
+  top: 1rem;
+  right: .9rem;
+  border-radius: .65rem;
+}
+
+.app-shell.sidebar-collapsed .sidebar .nav-link {
+  width: 3rem;
+  height: 3rem;
+  margin-inline: auto;
+  padding: 0;
+  border-radius: .95rem;
+}
+
+.app-shell.sidebar-collapsed .sidebar .nav-link i {
+  margin-right: 0 !important;
+}
+
+.app-shell.sidebar-collapsed .logout-btn {
+  width: 3.2rem !important;
+  height: 3.2rem;
+  padding: 0;
+  border-radius: 999px !important;
+  margin-inline: auto;
+}
+
+.app-shell.sidebar-collapsed .logout-btn i {
+  margin-right: 0 !important;
 }
 
 .content-area {

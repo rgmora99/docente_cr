@@ -33,14 +33,14 @@
       </button>
     </div>
     <nav class="nav flex-column mt-4 gap-2">
-      <a class="nav-link" href="{% url 'dashboard' %}"><i class="bi bi-grid me-2"></i><span class="sidebar-label">Dashboard</span></a>
-      <a class="nav-link" href="{% url 'weekly_planner' %}"><i class="bi bi-calendar-week me-2"></i><span class="sidebar-label">Planificador semanal</span></a>
-      <a class="nav-link" href="{% url 'planning_generator' %}"><i class="bi bi-pencil-square me-2"></i><span class="sidebar-label">Planeamientos</span></a>
-      <a class="nav-link" href="{% url 'materials' %}"><i class="bi bi-folder2-open me-2"></i><span class="sidebar-label">Materiales</span></a>
+      <a class="nav-link" href="{% url 'dashboard' %}" title="Dashboard"><i class="bi bi-grid me-2"></i><span class="sidebar-label">Dashboard</span></a>
+      <a class="nav-link" href="{% url 'weekly_planner' %}" title="Planificador semanal"><i class="bi bi-calendar-week me-2"></i><span class="sidebar-label">Planificador semanal</span></a>
+      <a class="nav-link" href="{% url 'planning_generator' %}" title="Planeamientos"><i class="bi bi-pencil-square me-2"></i><span class="sidebar-label">Planeamientos</span></a>
+      <a class="nav-link" href="{% url 'materials' %}" title="Materiales"><i class="bi bi-folder2-open me-2"></i><span class="sidebar-label">Materiales</span></a>
     </nav>
     <form action="{% url 'logout' %}" method="post" class="mt-auto">
       {% csrf_token %}
-      <button class="btn btn-outline-danger w-100 rounded-pill logout-btn" type="submit"><i class="bi bi-box-arrow-left me-2"></i><span class="sidebar-label">Cerrar sesión</span></button>
+      <button class="btn btn-outline-danger w-100 rounded-pill logout-btn" type="submit" title="Cerrar sesión"><i class="bi bi-box-arrow-left me-2"></i><span class="sidebar-label">Cerrar sesión</span></button>
     </form>
   </aside>
   <button class="sidebar-backdrop" type="button" data-sidebar-toggle aria-label="Cerrar menú"></button>
