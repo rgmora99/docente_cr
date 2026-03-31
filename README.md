@@ -51,3 +51,12 @@ Si en Windows aparece `You don't have permission to access that port`, inicia en
 ```bash
 python manage.py runserver 127.0.0.1:8080
 ```
+
+## Guía de validación para flujos WhatsApp
+
+- Ver `docs/whatsapp_flujo_validaciones.md` para una propuesta de validación por etapas, deduplicación e integración UI/chat interno.
+
+### Implementación base incluida
+
+- `core/services/whatsapp_flow_validator.py`: validador de estado para lotes de adjuntos (deduplicación por `event_id`, clasificación documental y transición controlada de etapas).
+- `tests/test_whatsapp_flow_validator.py`: pruebas unitarias del validador sin dependencias de Django.
