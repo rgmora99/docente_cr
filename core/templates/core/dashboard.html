@@ -1,0 +1,58 @@
+{% extends 'core/base.html' %}
+{% block title %}Dashboard | {{ ui_theme.brand_name }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+  <div>
+    <h1 class="fw-bold mb-1">Panel principal</h1>
+    <p class="text-muted mb-0">Organiza tu semana, materiales y planeamientos en un espacio motivador.</p>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  {% for card in feature_cards %}
+  <div class="col-md-6 col-xl-3">
+    {% include 'core/components/feature_card.html' with card=card %}
+  </div>
+  {% endfor %}
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-4">
+    <div class="card border-0 soft-panel rounded-4 h-100 reveal-up delay-1">
+      <div class="card-body">
+        <h5 class="fw-bold">Actividades próximas</h5>
+        <ul class="list-group list-group-flush mt-3">
+          {% for item in next_activities %}
+          <li class="list-group-item px-0 d-flex justify-content-between">
+            <span>{{ item.title }}</span>
+            <span class="badge text-bg-light">{{ item.date|date:"d/m" }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card border-0 soft-panel rounded-4 h-100 reveal-up delay-2">
+      <div class="card-body">
+        <h5 class="fw-bold">Materiales recientes</h5>
+        <ul class="list-group list-group-flush mt-3">
+          {% for material in recent_materials %}
+          <li class="list-group-item px-0">{{ material }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card border-0 soft-panel rounded-4 h-100 reveal-up delay-3">
+      <div class="card-body">
+        <h5 class="fw-bold">Resumen semanal</h5>
+        <div class="metric mt-3"><span>Clases programadas</span><strong>{{ weekly_summary.classes }}</strong></div>
+        <div class="metric"><span>Materiales subidos</span><strong>{{ weekly_summary.materials_uploaded }}</strong></div>
+        <div class="metric"><span>Evaluaciones pendientes</span><strong>{{ weekly_summary.pending_assessments }}</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

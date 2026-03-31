@@ -1,0 +1,57 @@
+{% extends 'core/base.html' %}
+{% block title %}Iniciar sesión | {{ ui_theme.brand_name }}{% endblock %}
+{% block content %}
+<section class="login-page">
+  <div class="shape shape-purple"></div>
+  <div class="shape shape-cyan"></div>
+  <div class="shape shape-yellow"></div>
+
+  <div class="container py-5 position-relative">
+    <div class="row justify-content-center align-items-center g-4 min-vh-100">
+      <div class="col-lg-5 d-none d-lg-block">
+        <div class="login-promo reveal-up">
+          <span class="chip">Plataforma educativa</span>
+          <h1 class="fw-bold mt-3">Enseña con claridad y energía</h1>
+          <p class="text-muted">Un espacio moderno para planificar, motivar y acompañar cada clase.</p>
+          <ul class="list-unstyled mt-4">
+            {% for item in login_highlights %}
+            <li class="d-flex align-items-start mb-3">
+              <i class="bi bi-check-circle-fill me-2 text-brand"></i>
+              <span>{{ item }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-md-8 col-lg-5">
+        <div class="card login-card border-0 rounded-4 reveal-up delay-1">
+          <div class="card-body p-4 p-md-5">
+            <div class="text-center mb-4">
+              <h2 class="fw-bold mb-1">Bienvenido</h2>
+              <p class="text-muted mb-0">Ingresa para continuar</p>
+            </div>
+
+            {% if form.errors %}
+            <div class="alert alert-danger rounded-3">Usuario o contraseña inválidos.</div>
+            {% endif %}
+
+            <form method="post" class="vstack gap-3">
+              {% csrf_token %}
+              <div>
+                <label class="form-label fw-semibold">Usuario</label>
+                <input type="text" name="username" class="form-control form-control-lg rounded-3" required autofocus>
+              </div>
+              <div>
+                <label class="form-label fw-semibold">Contraseña</label>
+                <input type="password" name="password" class="form-control form-control-lg rounded-3" required>
+              </div>
+              <button type="submit" class="btn btn-brand btn-lg rounded-pill mt-2">Ingresar al sistema</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
