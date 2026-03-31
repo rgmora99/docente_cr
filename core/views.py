@@ -1,6 +1,18 @@
-from datetime import date, timedelta
+from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
+from .services.dashboard_service import DashboardService
+from .services.ui_theme_service import UIThemeService
+
+
+class TeacherLoginView(LoginView):
+    template_name = 'core/login.html'
+    redirect_authenticated_user = True
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['login_highlights'] = UIThemeService.get_login_highlights()
+        return context
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):
@@ -8,22 +20,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        today = date.today()
-        context['next_activities'] = [
-            {'title': 'Revisión de tareas 7°A', 'date': today + timedelta(days=1)},
-            {'title': 'Laboratorio de ciencias 8°B', 'date': today + timedelta(days=2)},
-            {'title': 'Evaluación diagnóstica 9°C', 'date': today + timedelta(days=4)},
-        ]
-        context['recent_materials'] = [
-            'Guía de lectura comprensiva',
-            'Presentación: Ecosistemas de Costa Rica',
-            'Rúbrica de trabajo colaborativo',
-        ]
-        context['weekly_summary'] = {
-            'classes': 24,
-            'materials_uploaded': 6,
-            'pending_assessments': 3,
-        }
+        context.update(DashboardService.get_dashboard_payload())
         return context
 
 
