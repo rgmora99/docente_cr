@@ -1,0 +1,17 @@
+{% extends 'core/base.html' %}
+{% block title %}Planificador semanal | Docente CR{% endblock %}
+{% block content %}
+<h1 class="fw-bold mb-3">Planificador semanal</h1>
+<p class="text-muted">Distribuye contenidos por día para cada grupo.</p>
+<div class="card border-0 shadow-sm rounded-4 mt-4">
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-6 col-xl"><div class="planner-day p-3 rounded-4 h-100"><h6 class="fw-bold">Lunes</h6><textarea class="form-control border-0" rows="6" placeholder="Escribe actividades..."></textarea></div></div>
+      <div class="col-md-6 col-xl"><div class="planner-day p-3 rounded-4 h-100"><h6 class="fw-bold">Martes</h6><textarea class="form-control border-0" rows="6" placeholder="Escribe actividades..."></textarea></div></div>
+      <div class="col-md-6 col-xl"><div class="planner-day p-3 rounded-4 h-100"><h6 class="fw-bold">Miércoles</h6><textarea class="form-control border-0" rows="6" placeholder="Escribe actividades..."></textarea></div></div>
+      <div class="col-md-6 col-xl"><div class="planner-day p-3 rounded-4 h-100"><h6 class="fw-bold">Jueves</h6><textarea class="form-control border-0" rows="6" placeholder="Escribe actividades..."></textarea></div></div>
+      <div class="col-md-6 col-xl"><div class="planner-day p-3 rounded-4 h-100"><h6 class="fw-bold">Viernes</h6><textarea class="form-control border-0" rows="6" placeholder="Escribe actividades..."></textarea></div></div>
+    </div>
+  </div>
+</div>
+{% endblock %}

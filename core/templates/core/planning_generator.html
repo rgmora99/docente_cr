@@ -1,0 +1,27 @@
+{% extends 'core/base.html' %}
+{% block title %}Planeamientos | Docente CR{% endblock %}
+{% block content %}
+<h1 class="fw-bold mb-3">Generador básico de planeamientos</h1>
+<p class="text-muted">Crea planeamientos rápidos por asignatura y objetivo.</p>
+<div class="card border-0 shadow-sm rounded-4 mt-4">
+  <div class="card-body">
+    <form class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Asignatura</label>
+        <input class="form-control rounded-3" placeholder="Ej. Ciencias">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Nivel</label>
+        <input class="form-control rounded-3" placeholder="Ej. 8°">
+      </div>
+      <div class="col-12">
+        <label class="form-label">Objetivo de aprendizaje</label>
+        <textarea class="form-control rounded-3" rows="4" placeholder="Describe el objetivo..."></textarea>
+      </div>
+      <div class="col-12">
+        <button class="btn btn-success rounded-pill px-4" type="button">Generar borrador</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
