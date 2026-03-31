@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Docente CR{% endblock %}</title>
+  <title>{% block title %}{{ ui_theme.brand_name }}{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -13,10 +13,11 @@
   <link href="{% static 'core/css/styles.css' %}" rel="stylesheet">
 </head>
 <body>
-<div class="app-shell">
+<div class="app-shell {% if request.user.is_authenticated %}with-sidebar{% else %}no-sidebar{% endif %}">
   {% if request.user.is_authenticated %}
   <aside class="sidebar d-flex flex-column p-4">
-    <h4 class="fw-bold text-primary"><i class="bi bi-journal-check me-2"></i>Docente CR</h4>
+    <h4 class="fw-bold text-brand mb-0"><i class="bi bi-journal-check me-2"></i>{{ ui_theme.brand_name }}</h4>
+    <small class="text-muted mt-1">Panel educativo inteligente</small>
     <nav class="nav flex-column mt-4 gap-2">
       <a class="nav-link" href="{% url 'dashboard' %}"><i class="bi bi-grid me-2"></i>Dashboard</a>
       <a class="nav-link" href="{% url 'weekly_planner' %}"><i class="bi bi-calendar-week me-2"></i>Planificador semanal</a>
@@ -30,7 +31,7 @@
   </aside>
   {% endif %}
 
-  <main class="content-area p-4 p-md-5">
+  <main class="content-area {% if request.user.is_authenticated %}p-4 p-md-5{% endif %}">
     {% block content %}{% endblock %}
   </main>
 </div>
