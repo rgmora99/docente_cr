@@ -1,27 +1,219 @@
 {% extends 'core/base.html' %}
 {% block title %}Planeamientos | Docente CR{% endblock %}
 {% block content %}
-<h1 class="fw-bold mb-3">Generador básico de planeamientos</h1>
-<p class="text-muted">Crea planeamientos rápidos por asignatura y objetivo.</p>
-<div class="card border-0 shadow-sm rounded-4 mt-4">
-  <div class="card-body">
-    <form class="row g-3">
-      <div class="col-md-6">
-        <label class="form-label">Asignatura</label>
-        <input class="form-control rounded-3" placeholder="Ej. Ciencias">
+<h1 class="fw-bold mb-2">Generador básico de planeamientos</h1>
+<p class="text-muted">Piensa como docente: crea tu clase, guarda evidencia de seguimiento y ajústala cuando lo necesites.</p>
+
+{% if messages %}
+  <div class="mt-3">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} rounded-4 mb-2" role="alert">{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="row g-4 mt-1">
+  <div class="col-xl-8">
+    <div class="card border-0 shadow-sm rounded-4 h-100">
+      <div class="card-body">
+        <h2 class="h5 fw-bold mb-3">
+          {% if selected_planning %}Editar planeación{% else %}Nuevo borrador{% endif %}
+        </h2>
+        <form class="row g-3" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="save">
+          {% if selected_planning %}
+            <input type="hidden" name="plan_id" value="{{ selected_planning.id }}">
+          {% endif %}
+
+          <div class="col-md-6">
+            <label class="form-label" for="{{ planning_form.title.id_for_label }}">{{ planning_form.title.label }}</label>
+            {{ planning_form.title }}
+            {% if planning_form.title.errors %}<small class="text-danger d-block mt-1">{{ planning_form.title.errors|join:', ' }}</small>{% endif %}
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="planningSubjectSelect">Asignatura (desde configuración)</label>
+            <select class="form-select rounded-3" id="planningSubjectSelect" name="subject" required data-current-subject="{{ planning_form.subject.value|default_if_none:'' }}"></select>
+            <small class="text-muted d-block mt-1">Se toma de <a href="{% url 'teacher_profiles' %}">Configuración de planeaciones</a>.</small>
+            {% if planning_form.subject.errors %}<small class="text-danger d-block mt-1">{{ planning_form.subject.errors|join:', ' }}</small>{% endif %}
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="planningLevelSelect">Nivel (desde configuración)</label>
+            <select class="form-select rounded-3" id="planningLevelSelect" name="level" required data-current-level="{{ planning_form.level.value|default_if_none:'' }}"></select>
+            {% if planning_form.level.errors %}<small class="text-danger d-block mt-1">{{ planning_form.level.errors|join:', ' }}</small>{% endif %}
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="{{ planning_form.week_start.id_for_label }}">{{ planning_form.week_start.label }}</label>
+            {{ planning_form.week_start }}
+            {% if planning_form.week_start.errors %}<small class="text-danger d-block mt-1">{{ planning_form.week_start.errors|join:', ' }}</small>{% endif %}
+          </div>
+
+          <div class="col-12">
+            <label class="form-label" for="{{ planning_form.learning_objective.id_for_label }}">{{ planning_form.learning_objective.label }}</label>
+            {{ planning_form.learning_objective }}
+            {% if planning_form.learning_objective.errors %}<small class="text-danger d-block mt-1">{{ planning_form.learning_objective.errors|join:', ' }}</small>{% endif %}
+          </div>
+
+          <div class="col-12">
+            <label class="form-label" for="{{ planning_form.learning_sequence.id_for_label }}">{{ planning_form.learning_sequence.label }}</label>
+            {{ planning_form.learning_sequence }}
+            {% if planning_form.learning_sequence.help_text %}<small class="text-muted d-block mt-1">{{ planning_form.learning_sequence.help_text }}</small>{% endif %}
+            {% if planning_form.learning_sequence.errors %}<small class="text-danger d-block mt-1">{{ planning_form.learning_sequence.errors|join:', ' }}</small>{% endif %}
+          </div>
+
+          <div class="col-12">
+            <label class="form-label" for="{{ planning_form.assessment_strategy.id_for_label }}">{{ planning_form.assessment_strategy.label }}</label>
+            {{ planning_form.assessment_strategy }}
+            {% if planning_form.assessment_strategy.help_text %}<small class="text-muted d-block mt-1">{{ planning_form.assessment_strategy.help_text }}</small>{% endif %}
+            {% if planning_form.assessment_strategy.errors %}<small class="text-danger d-block mt-1">{{ planning_form.assessment_strategy.errors|join:', ' }}</small>{% endif %}
+          </div>
+
+          <div class="col-12">
+            <label class="form-label" for="{{ planning_form.resources.id_for_label }}">{{ planning_form.resources.label }}</label>
+            {{ planning_form.resources }}
+            {% if planning_form.resources.errors %}<small class="text-danger d-block mt-1">{{ planning_form.resources.errors|join:', ' }}</small>{% endif %}
+          </div>
+
+          <div class="col-12">
+            <label class="form-label" for="{{ planning_form.follow_up_notes.id_for_label }}">{{ planning_form.follow_up_notes.label }}</label>
+            {{ planning_form.follow_up_notes }}
+            {% if planning_form.follow_up_notes.help_text %}<small class="text-muted d-block mt-1">{{ planning_form.follow_up_notes.help_text }}</small>{% endif %}
+            {% if planning_form.follow_up_notes.errors %}<small class="text-danger d-block mt-1">{{ planning_form.follow_up_notes.errors|join:', ' }}</small>{% endif %}
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label" for="{{ planning_form.status.id_for_label }}">{{ planning_form.status.label }}</label>
+            {{ planning_form.status }}
+            {% if planning_form.status.errors %}<small class="text-danger d-block mt-1">{{ planning_form.status.errors|join:', ' }}</small>{% endif %}
+          </div>
+
+          <div class="col-12 d-flex flex-wrap gap-2">
+            <button class="btn btn-success rounded-pill px-4" type="submit">
+              {% if selected_planning %}Guardar cambios{% else %}Guardar borrador{% endif %}
+            </button>
+            {% if selected_planning %}
+              <a href="{% url 'planning_generator' %}" class="btn btn-outline-secondary rounded-pill px-4">Crear nuevo</a>
+            {% endif %}
+          </div>
+        </form>
       </div>
-      <div class="col-md-6">
-        <label class="form-label">Nivel</label>
-        <input class="form-control rounded-3" placeholder="Ej. 8°">
+    </div>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="card border-0 shadow-sm rounded-4">
+      <div class="card-body">
+        <h2 class="h5 fw-bold mb-3">Mantenimiento de planeaciones</h2>
+        <p class="text-muted small mb-3">Tus últimas planeaciones para reusar, ajustar o archivar según avances del grupo.</p>
+
+        {% if planning_items %}
+          <div class="d-grid gap-2">
+            {% for plan in planning_items %}
+              <div class="border rounded-4 p-3 bg-light-subtle">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                  <div>
+                    <h3 class="h6 fw-bold mb-1">{{ plan.title }}</h3>
+                    <small class="text-muted d-block">{{ plan.subject }} · {{ plan.level }}</small>
+                    <small class="text-muted d-block">Actualizado: {{ plan.updated_at|date:'d/m/Y H:i' }}</small>
+                  </div>
+                  <span class="badge text-bg-secondary text-capitalize">{{ plan.get_status_display }}</span>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                  <a href="{% url 'planning_generator' %}?plan={{ plan.id }}" class="btn btn-sm btn-outline-primary rounded-pill">Editar</a>
+                  <form method="post" class="m-0">
+                    {% csrf_token %}
+                    <input type="hidden" name="plan_id" value="{{ plan.id }}">
+                    <input type="hidden" name="action" value="delete">
+                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">Eliminar</button>
+                  </form>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">Todavía no tienes planeaciones guardadas.</p>
+        {% endif %}
       </div>
-      <div class="col-12">
-        <label class="form-label">Objetivo de aprendizaje</label>
-        <textarea class="form-control rounded-3" rows="4" placeholder="Describe el objetivo..."></textarea>
-      </div>
-      <div class="col-12">
-        <button class="btn btn-success rounded-pill px-4" type="button">Generar borrador</button>
-      </div>
-    </form>
+    </div>
   </div>
 </div>
+
+<script>
+  (() => {
+    const subjectSelect = document.querySelector('#planningSubjectSelect');
+    const levelSelect = document.querySelector('#planningLevelSelect');
+    if (!subjectSelect || !levelSelect) return;
+
+    const parseProfiles = () => {
+      const raw = localStorage.getItem('teacherPlanningProfiles');
+      if (!raw) return [];
+      try {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (_error) {
+        return [];
+      }
+    };
+
+    const currentSubject = subjectSelect.dataset.currentSubject || '';
+    const currentLevel = levelSelect.dataset.currentLevel || '';
+    const profiles = parseProfiles();
+    const groupedLevelsBySubject = new Map();
+
+    profiles.forEach((profile) => {
+      const subject = (profile.subject || '').trim();
+      const level = (profile.grade || '').trim();
+      if (!subject || !level) return;
+      if (!groupedLevelsBySubject.has(subject)) groupedLevelsBySubject.set(subject, new Set());
+      groupedLevelsBySubject.get(subject).add(level);
+    });
+
+    const subjects = [...groupedLevelsBySubject.keys()].sort((a, b) => a.localeCompare(b, 'es'));
+
+    const renderLevels = (subjectValue) => {
+      const levels = subjectValue && groupedLevelsBySubject.has(subjectValue)
+        ? [...groupedLevelsBySubject.get(subjectValue)].sort((a, b) => a.localeCompare(b, 'es'))
+        : [];
+
+      if (currentLevel && !levels.includes(currentLevel)) {
+        levels.unshift(currentLevel);
+      }
+
+      if (!levels.length) {
+        levelSelect.innerHTML = '<option value="">Primero configura una asignatura</option>';
+        levelSelect.disabled = true;
+        return;
+      }
+
+      levelSelect.innerHTML = levels.map((level) => `<option value="${level}">${level}</option>`).join('');
+      levelSelect.disabled = false;
+      levelSelect.value = levels.includes(currentLevel) ? currentLevel : levels[0];
+    };
+
+    if (currentSubject && !subjects.includes(currentSubject)) {
+      subjects.unshift(currentSubject);
+    }
+
+    if (!subjects.length) {
+      subjectSelect.innerHTML = '<option value="">Sin configuración disponible</option>';
+      subjectSelect.disabled = true;
+      levelSelect.innerHTML = '<option value="">Configura asignaturas y niveles primero</option>';
+      levelSelect.disabled = true;
+      return;
+    }
+
+    subjectSelect.innerHTML = subjects.map((subject) => `<option value="${subject}">${subject}</option>`).join('');
+    subjectSelect.disabled = false;
+    subjectSelect.value = subjects.includes(currentSubject) ? currentSubject : subjects[0];
+
+    renderLevels(subjectSelect.value);
+
+    subjectSelect.addEventListener('change', () => {
+      renderLevels(subjectSelect.value);
+    });
+  })();
+</script>
 {% endblock %}
